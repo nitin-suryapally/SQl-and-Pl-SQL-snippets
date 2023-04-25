@@ -483,3 +483,45 @@ variable_name [CONSTANT] datatype [NOT NULL] [:= | DEFAULT initial_value]
     END;  
     /  
 
+
+-- Cursur
+
+    -- example
+
+    DECLARE  
+    c_id customers.id%type;  
+    c_name customers.name%type;  
+    c_addr customers.address%type;  
+    CURSOR c_customers is  
+        SELECT id, name, address FROM customers;  
+    BEGIN  
+    OPEN c_customers;  
+    LOOP  
+        FETCH c_customers into c_id, c_name, c_addr;  
+        EXIT WHEN c_customers%notfound;  
+        dbms_output.put_line(c_id || ' ' || c_name || ' ' || c_addr);  
+    END LOOP;  
+    CLOSE c_customers;  
+    END;  
+    /  
+
+
+
+--triggers
+
+    --example
+
+    CREATE OR REPLACE TRIGGER display_salary_changes  
+    BEFORE DELETE OR INSERT OR UPDATE ON customers  
+    FOR EACH ROW  
+    WHEN (NEW.ID > 0)  
+    DECLARE  
+    sal_diff number;  
+    BEGIN  
+    sal_diff := :NEW.salary  - :OLD.salary;  
+    dbms_output.put_line('Old salary: ' || :OLD.salary);  
+    dbms_output.put_line('New salary: ' || :NEW.salary);  
+    dbms_output.put_line('Salary difference: ' || sal_diff);  
+    END;  
+    /    
+
